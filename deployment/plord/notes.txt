@@ -180,3 +180,13 @@ az aks enable-addons --addons azure-keyvault-secrets-provider --resource-group t
 # "clientId": "cc55fe51-0ef6-4297-ace0-de4f6c4162d2",
 
 az keyvault create -n openHackKeyVault69 -g teamResources
+az keyvault secret set -vault-name openHackKeyVault69 -n SQL-USER --value sqladminvTx2838
+az keyvault secret set -vault-name openHackKeyVault69 -n SQL-PASSWORD --value gR5yh8Vw7
+az keyvault secret set -vault-name openHackKeyVault69 -n SQL-SERVER --value sqlservervtx2838.database.windows.net
+az keyvault secret set -vault-name openHackKeyVault69 -n SQL-DBNAME --value mydrivingDB
+
+az keyvault set-policy -n openHackKeyVault69 --secret-permissions get --spn cc55fe51-0ef6-4297-ace0-de4f6c4162d2
+
+
+
+kubectl apply -f ./secretproviderclass.yaml
