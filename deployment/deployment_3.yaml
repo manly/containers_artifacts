@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: poi
+  namespace: api
 spec:
   replicas: 1
   selector:
@@ -17,9 +18,6 @@ spec:
       containers:
       - name: poi
         image: registryvtx2838.azurecr.io/poi:latest
-        envFrom:
-        - secretRef:
-           name: openhack-secrets
         env:
         - name: WEB_PORT
           value: "80"
@@ -30,6 +28,17 @@ spec:
         ports:
         - containerPort: 80
           name: poi
+        volumeMounts:
+        - name: secrets-store-inline
+          mountPath: "/secrets"
+          readOnly: true
+      volumes:
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "openhackkeyvault69"
 ---
 apiVersion: v1
 kind: Service
