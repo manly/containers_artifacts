@@ -100,8 +100,15 @@ az aks update -n openHackCluster -g teamResources --attach-acr registryvtx2838
 az network vnet subnet create -g teamResources --vnet-name vnet --name vnetweb --address-prefixes 10.2.1.0/24
 az network vnet subnet create -g teamResources --vnet-name vnet --name vnetapi --address-prefixes 10.2.2.0/24
 
+az network vnet subnet list --resource-group teamResources --vnet-name vnet --query "[0].id" --output tsv
+# /subscriptions/f2cb8911-d829-4cdc-a932-5346666d8266/resourceGroups/teamResources/providers/Microsoft.Network/virtualNetworks/vnet/subnets/vm-subnet
 
-az network vnet subnet list --resource-group teamResources --vnet-name vnet --query "[1].id" --output tsv
-# /subscriptions/f2cb8911-d829-4cdc-a932-5346666d8266/resourceGroups/teamResources/providers/Microsoft.Network/virtualNetworks/vnet/subnets/vnetweb
 
-az aks create --resource-group teamResources --name openHackClusterRBAC --network-plugin azure --vnet-subnet-id /subscriptions/f2cb8911-d829-4cdc-a932-5346666d8266/resourceGroups/teamResources/providers/Microsoft.Network/virtualNetworks/vnet/subnets/vnetweb --generate-ssh-keys
+# Create an Azure AD group
+az ad group create --display-name openHackADGroup --mail-nickname openHackADGroup
+
+# Create an AKS-managed Azure AD cluster
+az aks create -g teamResources -n openHackClusterRBAC --enable-azure-rbac --enable-aad --aad-admin-group-object-ids e83fb21a-7ec3-4df7-9fde-d9d5d8b37175 --network-plugin azure --vnet-subnet-id /subscriptions/f2cb8911-d829-4cdc-a932-5346666d8266/resourceGroups/teamResources/providers/Microsoft.Network/virtualNetworks/vnet/subnets/vm-subnet --generate-ssh-keys
+
+
+
