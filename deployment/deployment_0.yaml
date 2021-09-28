@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-java
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-java
+  template:
+    metadata:
+      labels:
+        app: user-java
+    spec:
+      nodeSelector:
+        "kubernetes.io/os": linux
+      containers:
+      - name: user-java
+        image: registryvtx2838.azurecr.io/user-java:latest
+        envFrom:
+        - secretRef:
+           name: openhack-secrets
+        ports:
+        - containerPort: 80
+          name: user-java
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-java
+spec:
+  ports:
+  - port: 80
+  selector:
+    app: user-java

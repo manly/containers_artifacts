@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trips
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trips
+  template:
+    metadata:
+      labels:
+        app: trips
+    spec:
+      nodeSelector:
+        "kubernetes.io/os": linux
+      containers:
+      - name: trips
+        image: registryvtx2838.azurecr.io/trips:latest
+        envFrom:
+        - secretRef:
+           name: openhack-secrets
+        env:
+        - name: PORT
+          value: "80"
+        - name: OPENAPI_DOCS_URI
+          value: "http://0.0.0.0"
+        - name: DEBUG_LOGGING
+          value: "false"
+        ports:
+        - containerPort: 80
+          name: trips
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: trips
+spec:
+  ports:
+  - port: 80
+  selector:
+    app: trips

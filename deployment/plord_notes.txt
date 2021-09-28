@@ -1,0 +1,97 @@
+hacker #5
+portal.azure.com
+hacker5o4l@msftopenhack6779ops.onmicrosoft.com        lD*d)OT(6
+
+
+Information you'll need for challenges. You can find these later in the 'Messages' tab.
+
+Web-dev User: webdev@msftopenhack6807ops.onmicrosoft.com
+Web-dev PW: mY9fd2Gf7
+Api-dev User: apidev@msftopenhack6807ops.onmicrosoft.com
+Api-dev PW: hA9cy6Ul2
+
+Azure SQL FDQN: sqlserverpue2294.database.windows.net
+Azure SQL Server User: sqladminpUe2294
+Azure SQL Server Pass: hK8sa0Vs8
+Azure SQL Server Database: mydrivingDB
+
+Simulator url:simulatorregistrypue2294.westus.azurecontainer.io
+REPLY
+Message from Automated MessagingSent on 09/21/2021 13:26:08
+Information you'll need for challenges. You can find these later in the 'Messages' tab.
+
+Web-dev User: webdev@msftopenhack6779ops.onmicrosoft.com
+Web-dev PW: gE3ng7Nm4
+Api-dev User: apidev@msftopenhack6779ops.onmicrosoft.com
+Api-dev PW: cV9xv4Rr2
+
+Azure SQL FDQN: sqlservervtx2838.database.windows.net
+Azure SQL Server User: sqladminvTx2838
+Azure SQL Server Pass: gR5yh8Vw7
+Azure SQL Server Database: mydrivingDB
+
+Simulator url:simulatorregistryvtx2838.westus.azurecontainer.io
+
+
+
+
+
+
+
+
+docker network create trip-net
+
+docker run --network trip-net -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=Password123" -p 1433:1433 --name sql1 -h sql1 -d mcr.microsoft.com/mssql/server:2017-latest
+
+docker exec -it sql1 "bash"
+/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "Password123"
+create database mydrivingDB;
+go
+exit
+exit
+
+docker run --network trip-net -e SQLFQDN=sql1 -e SQLUSER=SA -e SQLPASS=Password123 -e SQLDB=mydrivingDB openhack/data-load:v1
+
+c:
+cd \
+cd openhack\containers_artifacts\src\poi
+docker build -f ../../dockerfiles/Dockerfile_3 -t poi .
+
+docker run --network trip-net -p 8080:80 -d poi -e SQL_USER="SA" -e SQL_PASSWORD="Password123" -e SQL_SERVER="sql1" -e ASPNETCORE_ENVIRONMENT="Local"
+
+# test
+curl -i -X GET "http://localhost:8080/api/poi"
+curl -i -X GET "http://localhost:8080/api/poi/healthcheck"
+
+#container registry access keys
+# https://portal.azure.com/  -> resource groups -> teamResources -> ...
+#az login       hacker5o4l@msftopenhack6779ops.onmicrosoft.com        lD*d)OT(6
+az acr login --name registryvtx2838
+docker tag poi registryvtx2838.azurecr.io/poi
+docker push registryvtx2838.azurecr.io/poi
+
+
+
+
+# send local to cluster
+c:
+cd \
+cd openhack\containers_artifacts\src\tripviewer
+docker build -f ../../dockerfiles/Dockerfile_1 -t tripviewer .
+docker run --network trip-net -p 8081:80 -d tripviewer -e SQL_USER="SA" -e SQL_PASSWORD="Password123" -e SQL_SERVER="sql1"
+az acr login --name registryvtx2838
+docker tag tripviewer registryvtx2838.azurecr.io/tripviewer
+docker push registryvtx2838.azurecr.io/tripviewer
+
+
+
+
+
+
+
+# part #2
+# creating cluster
+az aks create --resource-group teamResources --name openHackCluster --node-count # --enable-addons monitoring --generate-ssh-keys
+# connect cluster
+az aks get-credentials --resource-group teamResources --name openHackCluster
+az aks update -n openHackCluster -g teamResources --attach-acr registryvtx2838

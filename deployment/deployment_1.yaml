@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tripviewer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tripviewer
+  template:
+    metadata:
+      labels:
+        app: tripviewer
+    spec:
+      nodeSelector:
+        "kubernetes.io/os": linux
+      containers:
+      - name: tripviewer
+        image: registryvtx2838.azurecr.io/tripviewer:latest
+        envFrom:
+        - secretRef:
+           name: openhack-secrets
+        env:
+        - name: TRIPS_API_ENDPOINT
+          value: "http://trips:80"
+        - name: USERPROFILE_API_ENDPOINT
+          value: "http://userprofile:80"
+        ports:
+        - containerPort: 80
+          name: tripviewer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tripviewer
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+  selector:
+    app: tripviewer
+
