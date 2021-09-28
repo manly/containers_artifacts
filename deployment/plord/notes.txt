@@ -160,3 +160,23 @@ kubectl apply -f .\deployment_4.yaml --namespace api
 
 az aks update -n openHackClusterRBAC -g teamResources --attach-acr registryvtx2838
 
+
+
+
+
+
+az feature register --namespace "Microsoft.ContainerService" --name "AKS-AzureKeyVaultSecretsProvider"
+az feature list -o table --query "[?contains(name, 'Microsoft.ContainerService/AKS-AzureKeyVaultSecretsProvider')].{Name:name,State:properties.state}"
+az provider register --namespace Microsoft.ContainerService
+
+# Install the aks-preview extension
+az extension add --name aks-preview
+
+# Update the extension to make sure you have the latest version installed
+az extension update --name aks-preview
+
+
+az aks enable-addons --addons azure-keyvault-secrets-provider --resource-group teamResources --name openHackClusterRBAC
+# "clientId": "cc55fe51-0ef6-4297-ace0-de4f6c4162d2",
+
+az keyvault create -n openHackKeyVault69 -g teamResources
