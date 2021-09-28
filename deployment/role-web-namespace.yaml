@@ -4,7 +4,7 @@ metadata:
   name: web-user-full-access
   namespace: web
 rules:
-- apiGroups: ["", "extensions", "apps", "webdevs"]
+- apiGroups: ["", "extensions", "apps"]
   resources: ["*"]
   verbs: ["*"]
 - apiGroups: ["batch"]
