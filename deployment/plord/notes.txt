@@ -151,3 +151,12 @@ kubectl apply -f rolebinding-webdevs-namespace.yaml
 kubectl apply -f rolebinding-apidevs-namespace.yaml
 
 az aks get-credentials --resource-group teamResources --name openHackClusterRBAC  --overwrite-existing
+
+kubectl apply -f .\deployment_0.yaml --namespace api
+kubectl apply -f .\deployment_1.yaml --namespace web
+kubectl apply -f .\deployment_2.yaml --namespace api
+kubectl apply -f .\deployment_3.yaml --namespace api
+kubectl apply -f .\deployment_4.yaml --namespace api
+
+az aks update -n openHackClusterRBAC -g teamResources --attach-acr registryvtx2838
+
