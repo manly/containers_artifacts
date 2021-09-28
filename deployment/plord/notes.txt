@@ -111,4 +111,43 @@ az ad group create --display-name openHackADGroup --mail-nickname openHackADGrou
 az aks create -g teamResources -n openHackClusterRBAC --enable-azure-rbac --enable-aad --aad-admin-group-object-ids e83fb21a-7ec3-4df7-9fde-d9d5d8b37175 --network-plugin azure --vnet-subnet-id /subscriptions/f2cb8911-d829-4cdc-a932-5346666d8266/resourceGroups/teamResources/providers/Microsoft.Network/virtualNetworks/vnet/subnets/vm-subnet --generate-ssh-keys
 
 
+az aks get-credentials --resource-group teamResources --name openHackClusterRBAC 
 
+
+
+
+az aks show --resource-group teamResources --name openHackClusterRBAC --query id -o tsv
+# /subscriptions/f2cb8911-d829-4cdc-a932-5346666d8266/resourcegroups/teamResources/providers/Microsoft.ContainerService/managedClusters/openHackClusterRBAC
+
+az ad group create --display-name webdevs --mail-nickname webdevs --query objectId -o tsv
+# 60821985-26d6-4295-9d53-b907a5c44a07
+az ad group create --display-name apidevs --mail-nickname apidevs --query objectId -o tsv
+# aaf1379b-b452-4def-a5c1-76936e02a7ca
+
+az role assignment create   --assignee 60821985-26d6-4295-9d53-b907a5c44a07   --role "Azure Kubernetes Service Cluster User Role"   --scope /subscriptions/f2cb8911-d829-4cdc-a932-5346666d8266/resourcegroups/teamResources/providers/Microsoft.ContainerService/managedClusters/openHackClusterRBAC
+az role assignment create   --assignee aaf1379b-b452-4def-a5c1-76936e02a7ca   --role "Azure Kubernetes Service Cluster User Role"   --scope /subscriptions/f2cb8911-d829-4cdc-a932-5346666d8266/resourcegroups/teamResources/providers/Microsoft.ContainerService/managedClusters/openHackClusterRBAC
+
+
+
+az aks get-credentials --resource-group teamResources --name openHackClusterRBAC --admin
+
+kubectl create namespace web
+kubectl create namespace api
+
+c:
+cd \
+cd openhack\containers_artifacts\deployment
+kubectl apply -f role-web-namespace.yaml
+kubectl apply -f role-api-namespace.yaml
+
+
+az ad group show --group webdevs --query objectId -o tsv
+# 60821985-26d6-4295-9d53-b907a5c44a07
+az ad group show --group apidevs --query objectId -o tsv
+# aaf1379b-b452-4def-a5c1-76936e02a7ca
+
+
+kubectl apply -f rolebinding-webdevs-namespace.yaml
+kubectl apply -f rolebinding-apidevs-namespace.yaml
+
+az aks get-credentials --resource-group teamResources --name openHackClusterRBAC  --overwrite-existing
