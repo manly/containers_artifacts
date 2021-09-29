@@ -18,6 +18,11 @@ spec:
       containers:
       - name: trips
         image: registryvtx2838.azurecr.io/trips:latest
+        resources:
+          requests:
+            memory: "128Mi"
+          limits:
+            memory: "512Mi"
         env:
         - name: PORT
           value: "80"

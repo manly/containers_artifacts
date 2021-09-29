@@ -18,6 +18,11 @@ spec:
       containers:
       - name: tripviewer
         image: registryvtx2838.azurecr.io/tripviewer:latest
+        resources:
+          requests:
+            memory: "128Mi"
+          limits:
+            memory: "512Mi"
         env:
         - name: TRIPS_API_ENDPOINT
           value: "http://trips.api.svc.cluster.local:80"

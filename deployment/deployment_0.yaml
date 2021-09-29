@@ -18,6 +18,11 @@ spec:
       containers:
       - name: user-java
         image: registryvtx2838.azurecr.io/user-java:latest
+        resources:
+          requests:
+            memory: "128Mi"
+          limits:
+            memory: "512Mi"
         ports:
         - containerPort: 80
           name: user-java

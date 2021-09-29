@@ -18,6 +18,11 @@ spec:
       containers:
       - name: poi
         image: registryvtx2838.azurecr.io/poi:latest
+        resources:
+          requests:
+            memory: "128Mi"
+          limits:
+            memory: "512Mi"
         env:
         - name: WEB_PORT
           value: "80"
